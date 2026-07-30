@@ -17,30 +17,31 @@ Contact the Release Management team for small, medium, and large releases: CFT_R
 ### Large
 
 1. SecOps involvement required for the release to proceed (ITHC)
-2. New interfaces with other common components or DTS services or new 3rd Party (Support Model)
-3. This is the first release of a new service / common component (Support Model)
+2. New interfaces with other common components or DTS services or new 3rd Party (Support Model considerations)
+3. This is the first release of a new service / common component (Support Model considerations)
 
 ### Medium
 
 1. Altered interfaces with other common components / services / existing 3rd parties 
-2. Platform-level infrastructure changes affecting other services
+2. Any infrastructure changes identified or changes to monitoring requiring Operational Acceptance Testing (OAT)
 3. An outage is required for other services
 4. The change affects the use of data, introduces new data, or changes storage needs for data
 5. Performance Testing is required
 6. The change is legislative or requires practice orders/directions
 7. The change impacts multiple code repositories
-8. There are changes to the support of the service as a result of this release
 
 ### Small
 
 1. An outage is required only to your own service
-2. The business feature/change impacts users beyond the boundary of your service/jurisdiction
+2. The business feature/change impacts users beyond the boundary of your service
 3. The change affects the Court & Tribunals Service Centre (Implementation Working Group)
 4. If this is a security release, there is a CVE with a risk rating of 9 and above
+5. If the release is a decomissioning of any sort (if requires an impact assessment - could become a Medium)
+6. There are no changes to the support of the service as a result of this release
 
 ### Peer approval (CI/CD)
 
-1. The business feature/change only impacts users of your service/jurisdiction
+1. The business feature/change only impacts users of your service
 2. The change impacts only one code repository
 
 ## Release Governance per Category
