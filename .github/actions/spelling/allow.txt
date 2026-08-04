@@ -350,3 +350,14 @@ Codespaces
 Customisation
 devcontainers
 Qube
+Danalyzer
+Ddata
+Ddependency
+Dnvd
+ossindex
+OWASPDB
+Pnvd
+Qube
+retirejs
+tfenv
+validforhours
