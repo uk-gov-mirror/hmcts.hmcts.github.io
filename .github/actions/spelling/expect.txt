@@ -85,6 +85,8 @@ pushd
 pytest
 QLDTj
 rackup
+Rakefile
+rakelib
 Rthnz
 scp
 securerandom
