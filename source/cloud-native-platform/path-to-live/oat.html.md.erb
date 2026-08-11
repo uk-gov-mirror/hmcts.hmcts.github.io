@@ -1,6 +1,6 @@
 ---
 title: Operational Acceptance Testing
-last_reviewed_on: 2025-06-25
+last_reviewed_on: 2026-01-15
 review_in: 6 months
 weight: 6
 ---
@@ -18,13 +18,10 @@ This covers details on the Operational Acceptance Testing (OAT) performed by Pla
 ## Do I need an OAT for my change ?
 
 - Though Platform Operations do not OAT every change, it is the development team's responsibility to make sure even a small code change complies with OAT objectives and criteria.
-- Crime OAT will be done when a new service is released or a major infrastructure change (for example online plea service as an example - moving from on premise to AKS solution).
+- OAT will be done when a new service is released (first time an OAT is being done) or a major infrastructure or design change (for example Crime online plea service as an example - moving from on premise to AKS solution).
 - Medium and Large releases always go through Release Management team which involves Impact Analysis page completed. Development Lead will use the information in the IA to assess and document whether the release requires OAT which will be reviewed by Platform Operations.
-- Some examples when Platform Operations would require an OAT:
-     1. New [Component](../glossary/#component) being added. It could be a simple Job / Function.
-     2. Changes which have a performance or security impact. This is usually assessed early in release cycle to check the need for a performance test or an ITHC.
-     3. New integration being added to existing [Component](../glossary/#component).
-     4. Infrastructure changes or additions to a [Product](../glossary/#product) / [Component](../glossary/#component).
+- Please ensure that SOG, high and low level designs are kept up to date for any relevant design or infrastructure changes.
+- For some cases where a full OAT has been done before a subset of the OAT tasks may need to be implemented for significant infrastructure or design changes. For example SOG updates, monitoring and alerting, etc. 
 
 ## How do I ask for an OAT?
 
@@ -78,7 +75,7 @@ This OAT is to ensure the software and licenses for infrastructure and hosting i
 
 This OAT is to ensure there is a robust support model for the product as part of the delivery.
 
-- SOG should be updated with support model along with details about `Assignment Group` in Service Now.
+- SOG should be updated with support model along with details about `Assignment Team` in Halo.
 - Standard support model is documented in [confluence](https://tools.hmcts.net/confluence/display/DIP/Public+Beta+Support)
 
 ### Error Handling Framework

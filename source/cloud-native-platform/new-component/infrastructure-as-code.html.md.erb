@@ -1,8 +1,8 @@
 ---
 title: Infrastructure as Code
-last_reviewed_on: 2025-06-25
+last_reviewed_on: 2026-07-29
 review_in: 6 months
-weight: 2
+weight: 3
 ---
 
 # <%= current_page.data.title %>
@@ -37,7 +37,7 @@ Infrastructure is layered into the following levels:
 * Product
 * Component
 
-Each level builds on lower levels so, the platform-level infrastructure must be provisioned before the
+Each level builds on lower levels, so the platform-level infrastructure must be provisioned before the
 product-level infrastructure, which in turn must be provisioned before the component-level infrastructure.
 
 In each environment, there will be **exactly one set** of all platform-level infrastructure and **exactly one set** of each of the product and component-level infrastructure configurations.
@@ -139,4 +139,3 @@ You must specify what version of terraform you want Jenkins to use with a `.terr
 ## Jenkinsfile_CNP
 
 You must add a `Jenkinsfile_CNP` to the root directory of your repository in order to define a build pipeline for it. [Example](https://github.com/hmcts/tax-tribunals-shared-infrastructure/blob/master/Jenkinsfile_CNP).
-
