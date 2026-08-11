@@ -38,8 +38,8 @@ repos:
         # source/cjs-common-platform/onboarding/03-get-approved.html.md.erb
         # line 18). --markdown-linebreak-ext tells the hook to keep exactly
         # two trailing spaces on non-blank lines in .md and .erb files -
-        # everything else still gets trimmed. Matched by `os.path.splitext`,
-        # so it applies to `*.html.md.erb` too (last extension is `.erb`).
+        # everything else still gets trimmed. The `erb` entry is what covers
+        # this repo's pages, whose final extension is `.erb`.
         args: ["--markdown-linebreak-ext=erb,md"]
 
   # The same frontmatter check CI runs (bundle exec rake check_frontmatter),
