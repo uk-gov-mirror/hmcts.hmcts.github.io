@@ -23,11 +23,10 @@ As a minimum, developers should be able to run:
 
 Use the examples below to run the same types of checks locally before opening a PR.
 
-| Stack | Build/package steps | Unit tests | Linting and formatting | Static analysis | Security and dependency checks | Terraform validation and planning |
+| Stack | Build/package steps | Unit tests | Linting and formatting | Static analysis | Security and dependency checks |
 |---|---|---|---|---|---|---|---|
-| Node.js | Follow the instructions in the [Express template](https://github.com/hmcts/expressjs-template#running-the-application) | Follow the [Running tests for Express](https://github.com/hmcts/expressjs-template#running-the-tests) guidance | `yarn lint` | `yarn lint --fix`<br>`yarn prettier --write src/`<br>`yarn lint` | Follow the [SonarQube for frontend](#running-sonarqube-scan-locally) guidance | `yarn audit` | If `infrastructure/` exists in the project repo or if running from shared-infrastructure repo, follow the [Running Terraform](#running-terraform-locally) guidance |
-| Java (Gradle) | Follow the instructions in the [Spring Boot template](https://github.com/hmcts/spring-boot-template#building-and-deploying-the-application) | Follow the [Plugins for Spring Boot](https://github.com/hmcts/spring-boot-template#plugins) guidance | `./gradlew --no-daemon check` | Follow the [SonarQube for backend](#running-sonarqube-scan-locally) guidance | Follow the [OWASP Dependency Checks for backend](#running-dependency-checks-locally) guidance | If `infrastructure/` exists in the project repo or if running from shared-infrastructure repo, follow the [Running Terraform](#running-terraform-locally) guidance |
-
+| Node.js | Follow the instructions in the [Express template](https://github.com/hmcts/expressjs-template#running-the-application) | Follow the [Running tests for Express](https://github.com/hmcts/expressjs-template#running-the-tests) guidance | `yarn lint` | `yarn lint --fix`<br>`yarn prettier --write src/`<br>`yarn lint` | Follow the [SonarQube for frontend](#running-sonarqube-scan-locally) guidance | `yarn audit` |
+| Java (Gradle) | Follow the instructions in the [Spring Boot template](https://github.com/hmcts/spring-boot-template#building-and-deploying-the-application) | Follow the [Plugins for Spring Boot](https://github.com/hmcts/spring-boot-template#plugins) guidance | `./gradlew --no-daemon check` | Follow the [SonarQube for backend](#running-sonarqube-scan-locally) guidance | Follow the [OWASP Dependency Checks for backend](#running-dependency-checks-locally) guidance |
 > **Advice:**  If you are troubleshooting a pipeline failure, commands can often be copied from your Jenkins step and run locally.
 
 ## Running SonarQube Scan Locally
@@ -74,47 +73,4 @@ To run a dependency check locally, execute the following command in the project 
   dependencyCheckAggregate
 ```
 
-This runs the OWASP Dependency Check without connecting to the OWASP database, you can optionally provide the parameters to connect to the OWASP database if you want to run a full scan:
-
-```bash
- ./gradlew --no-daemon --stacktrace \
-    -DdependencyCheck.failBuild=true \
-    -Dnvd.api.check.validforhours=24 \
-    -Danalyzer.central.enabled=false \
-    -Ddata.driver_name=org.postgresql.Driver \
-    -Ddata.connection_string="${OWASPDB_V15_CONNECTION_STRING}" \
-    -Ddata.user="${OWASPDB_V15_ACCOUNT}" \
-    -Ddata.password="${OWASPDB_V15_PASSWORD}" \
-    -Danalyzer.retirejs.enabled=false \
-    -Danalyzer.ossindex.enabled=false \
-    dependencyCheckAggregate
-```
-
-## Running Terraform Locally
-
-To run Terraform locally, you need to have Terraform installed on your machine. See the [Terraform website](https://developer.hashicorp.com/terraform/tutorials/azure-get-started/install-cli).
-
-You will need to authenticate with Azure using the Azure CLI. See the [Azure CLI documentation](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli) for more information.
-
-To run Terraform checks locally, navigate to the `infrastructure/` directory or the root of the `shared-infrastructure` repo and run the commands below. 
-
-You will need to include variables specific to your service, to obtain the full command including these variables, navigate to the 'console output' of your pipeline in Jenkins and copy the commands from there. You will want to search for the following commands in the console output:
-
-```bash
-terraform --version
-terraform init
-terraform validate
-terraform plan
-```
-
-To format your Terraform files, run the following command:
-
-```bash
-terraform fmt -recursive
-``` 
-
-If you are using multiple versions of Terraform, you may want to use [tfenv](https://github.com/tfutils/tfenv) to manage your Terraform versions.
-
-```bash
-tfenv
-``` 
+This runs the OWASP Dependency Check without connecting to the OWASP database, the Jenkins pipeline scan will connect to to the OWASP database which includes more specific rules.
