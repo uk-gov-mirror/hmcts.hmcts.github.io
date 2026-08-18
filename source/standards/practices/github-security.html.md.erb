@@ -53,7 +53,7 @@ When integrated with [Pull request branch protections](https://docs.github.com/e
 A critical strategic function of CODEOWNERS is the protection of CI/CD configuration files. Targets such as GitHub Actions, Jenkinsfiles, and Azure pipelines are commonly exploited in supply chain attacks to inject malicious code into the build process. By designating owner teams for these files, we can enforce branch protections that prevent unauthorized modifications to our deployment logic.
 
 ### Branch Protections
-Pull Request (PR) controls ensure that code is reviewed by at least onn other person, providing a critical gate against both human error and malicious intent.
+Pull Request (PR) controls ensure that code is reviewed by at least one other person, providing a critical gate against both human error and malicious intent.
 
 For setting up base protection see [creating a GitHub repository](/cloud-native-platform/new-component/github-repo.html#create-a-github-repository)
 
@@ -66,9 +66,9 @@ The PR process can be further strengthened by requiring domain-expert validation
 For information on expert review see [require expert review](#require-expert-review)
 
 
-**Re-approval on New Commits**: This rule can be enforced to prevent the introduction of unchecked code. Any new commits pushed to a branch after an initial revew immediately void the previous approval, requiring a fresh audit.
+**Re-approval on New Commits**: This rule can be enforced to prevent the introduction of unchecked code. Any new commits pushed to a branch after an initial review immediately void the previous approval, requiring a fresh audit.
 
-**Signed Commits**: Gits default authentication methods do not prevent impersonation, meaning anyone inside the organisation can impersonate a colleague. See [Commit Signing](#commit-signing) for more information
+**Signed Commits**: Git's default authentication methods do not prevent impersonation, meaning anyone inside the organisation can impersonate a colleague. See [Commit Signing](#commit-signing) for more information
 
 ### Commit Signing
 
@@ -90,7 +90,7 @@ To enable this for repositories see [Require signed commits](https://docs.github
 
 A central [SECURITY](https://github.com/hmcts/hmcts.github.io/blob/main/security.md) file has been added to Github to show a Security Policy link inside all repositories.
 
-<img src="/images/securitypolicy.png" alt="Github Security policy link showing in repository"/>
+<img src="/images/security-policy.png" alt="Github Security policy link showing in repository"/>
 
 If this requires changing for your application, you can add a SECURITY.md to your own repository to overwrite the content.
 
@@ -98,12 +98,12 @@ If this requires changing for your application, you can add a SECURITY.md to you
 
 Renovate is by default enabled for new repositories to manage dependency updates. For more information see [Automated dependency updates](/cloud-native-platform/guides/automated-dependency-updates.html)
 
-If Pull Requests are blocked due to Requiring codeowners review see CODEOWNERS section on  [Automated depency updates page](/cloud-native-platform/guides/automated-dependency-updates.html#codeowners) page or ensure Pull requests from Renovate are regularly reviewed.
+If Pull Requests are blocked due to Requiring codeowners review see CODEOWNERS section on  [Automated dependency updates page](/cloud-native-platform/guides/automated-dependency-updates.html#codeowners) page or ensure Pull requests from Renovate are regularly reviewed.
 
 Teams should pay close attention to dependabot where alerts are received for cases where dependencies have not yet been updated.
 
 ### Archiving code
-Repositories should be archived where they are not activly maintained
+Repositories should be archived where they are not actively maintained
 
 
 
