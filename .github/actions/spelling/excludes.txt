@@ -35,6 +35,3 @@ Tunnelblick
 VMs
 wifi
 zshrc
-bsp
-cdm
-neuvector
