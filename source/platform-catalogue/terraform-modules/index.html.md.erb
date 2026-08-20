@@ -7,14 +7,15 @@ weight: 1
 
 # <%= current_page.data.title %>
 
-This list is generated from each module repo's `.hmcts/catalogue.yaml` file. To add or fix an entry, edit that
-file in the owning repo rather than here - see the
+This list is generated from each module repo's `.hmcts/catalogue.yaml` file. To add or fix an entry, propose a
+pull request to that repository rather than editing HMCTS Way - see the
 [catalogue schema](https://github.com/hmcts/hmcts.github.io/blob/main/schemas/terraform-module-catalogue.schema.json)
 for the fields it accepts.
 
-"Maintained by" is the team accountable for the module, not an exclusive owner - anyone can propose a change to
-a module the same way they'd contribute anywhere else at HMCTS: open a pull request against the repo, following
-the [pull request standards](/cloud-native-platform/standards/pull-requests.html).
+"Stewarded by" identifies the group best placed to review and support the module. It does not confer exclusive
+ownership: platform modules such as Front Door are shared HMCTS assets, and anyone can propose an improvement
+through a normal pull request, following the
+[pull request standards](/cloud-native-platform/standards/pull-requests.html).
 
 <%
 modules = data.terraform_modules || []
@@ -54,6 +55,7 @@ lifecycle_tag_class = {
 <div id="catalogue-modules">
 <% modules.each do |mod| %>
 <% links = mod['links'] || {} %>
+<% default_branch = mod['default_branch'] || 'main' %>
 <div class="catalogue-module" data-category="<%= mod['category'] %>" data-lifecycle="<%= mod['lifecycle'] %>">
   <h2><%= mod['name'] %></h2>
   <p>
@@ -63,8 +65,23 @@ lifecycle_tag_class = {
   <p><%= mod['description'] %></p>
   <div class="table-container">
     <table>
-      <tr><td>Maintained by</td><td><%= mod['owner'] %></td></tr>
+      <tr><td>Stewarded by</td><td><%= mod['owner'] %></td></tr>
       <tr><td>Category</td><td><%= mod['category'] %></td></tr>
+      <% if mod['maturity'] %>
+      <tr><td>Maturity</td><td><%= mod['maturity'].capitalize %></td></tr>
+      <% end %>
+      <% unless mod.dig('platform', 'approved').nil? %>
+      <tr><td>Platform approval</td><td><%= mod['platform']['approved'] ? 'Approved' : 'Not approved' %></td></tr>
+      <% end %>
+      <% if mod.dig('usage', 'new_deployments') %>
+      <tr><td>New deployments</td><td><%= mod['usage']['new_deployments'].capitalize %></td></tr>
+      <% end %>
+      <% if mod.dig('usage', 'existing_deployments') %>
+      <tr><td>Existing deployments</td><td><%= mod['usage']['existing_deployments'].capitalize %></td></tr>
+      <% end %>
+      <% if mod['supported_environments'] %>
+      <tr><td>Supported environments</td><td><%= mod['supported_environments'].join(', ') %></td></tr>
+      <% end %>
       <% if mod.dig('version', 'recommended') %>
       <tr><td>Recommended version</td><td><%= mod['version']['recommended'] %></td></tr>
       <% end %>
@@ -78,6 +95,9 @@ lifecycle_tag_class = {
       <% if mod['lifecycle'] == 'deprecated' && mod['replacement'] %>
       <tr><td>Replacement</td><td><%= mod['replacement'] %></td></tr>
       <% end %>
+      <% if mod.dig('support', 'contact') %>
+      <tr><td>Support</td><td><%= mod['support']['contact'] %></td></tr>
+      <% end %>
     </table>
   </div>
   <p>
@@ -85,7 +105,7 @@ lifecycle_tag_class = {
     <% parts << "<a href=\"#{links['documentation']}\">Documentation</a>" if links['documentation'] %>
     <% parts << "<a href=\"#{links['examples']}\">Examples</a>" if links['examples'] %>
     <% parts << "<a href=\"#{links['repository']}\">GitHub</a>" if links['repository'] %>
-    <% parts << "<a href=\"#{links['repository']}/edit/main/.hmcts/catalogue.yaml\">Contribute</a>" if links['repository'] %>
+    <% parts << "<a href=\"#{links['repository']}/edit/#{default_branch}/.hmcts/catalogue.yaml\">Contribute</a>" if links['repository'] %>
     <%= parts.join(' | ') %>
   </p>
 </div>

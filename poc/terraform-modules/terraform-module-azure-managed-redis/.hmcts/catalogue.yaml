@@ -1,0 +1,27 @@
+apiVersion: catalogue.hmcts.gov.uk/v1
+id: azure-managed-redis
+name: Azure Managed Redis
+type: terraform-module
+category: database
+description: Provisions the baseline configuration for an Azure Managed Redis deployment.
+owner: platform-operations
+lifecycle: supported
+maturity: production
+platform:
+  approved: true
+usage:
+  new_deployments: allowed
+  existing_deployments: allowed
+version:
+  recommended: 1.0.0
+terraform:
+  minimum_version: 1.6.0
+providers:
+  azurerm: '>= 4.0, < 5.0'
+supported_environments: [sandbox, development, test, production]
+links:
+  repository: https://github.com/hmcts/terraform-module-azure-managed-redis
+  documentation: https://github.com/hmcts/terraform-module-azure-managed-redis#readme
+  examples: https://github.com/hmcts/terraform-module-azure-managed-redis/tree/main/examples/basic
+support:
+  contact: '#platops'

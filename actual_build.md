@@ -1,0 +1,47 @@
+# Platform Catalogue POC: local build
+
+## What this POC demonstrates
+
+The catalogue is generated from Terraform module metadata, rather than maintained by hand
+in HMCTS Way. The local fixture repositories in `poc/terraform-modules/` demonstrate
+five supported modules across common categories, plus one deprecated module with an
+approved replacement. Their `owner` metadata identifies stewardship and a support route;
+the modules remain shared assets that anyone can improve through a normal pull request.
+
+## Run locally
+
+From the repository root:
+
+```sh
+bundle install
+bundle exec rake catalogue:refresh_local
+bundle exec middleman server
+```
+
+Open `http://localhost:4567/platform-catalogue/terraform-modules/`. The local refresh
+rewrites `data/terraform_modules.yml`; it does not use the GitHub API, an App token, or
+network access.
+
+To make a static build instead, run:
+
+```sh
+bundle exec rake catalogue:refresh_local
+bundle exec middleman build
+bundle exec rake check_pages
+```
+
+## How the production refresh differs
+
+`bundle exec rake catalogue:refresh` discovers `hmcts` repositories tagged
+`terraform-module`, follows all GitHub API result pages, and reads
+`.hmcts/catalogue.yaml` from each repository's default branch.
+
+The scheduled GitHub workflow uses an organisation-installed GitHub App token. Configure
+the `HMCTS_CATALOGUE_APP_ID` and `HMCTS_CATALOGUE_APP_PRIVATE_KEY` repository secrets and
+install the App with read access to the relevant HMCTS repositories. This allows discovery
+of authorised private repositories; the normal repository `GITHUB_TOKEN` is insufficient
+for that job.
+
+The workflow fails without changing catalogue data if discovery fails, and it fails rather
+than generating an incomplete catalogue if the GitHub topic exceeds the search API's
+1,000-repository limit.

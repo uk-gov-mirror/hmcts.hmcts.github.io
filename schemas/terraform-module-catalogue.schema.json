@@ -24,7 +24,7 @@
     },
     "owner": {
       "type": "string",
-      "description": "Team accountable for maintaining the module and reviewing changes, e.g. 'data-domain'. Not exclusive ownership - any team can propose a change via a normal pull request, per the HMCTS Way pull request standards."
+      "description": "Group best placed to review and support the module, e.g. 'data-domain'. This is stewardship rather than exclusive ownership: anyone can propose a change through a normal pull request, per the HMCTS Way pull request standards."
     },
     "lifecycle": {
       "type": "string",

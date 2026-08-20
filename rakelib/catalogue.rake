@@ -15,6 +15,7 @@ require 'yaml'
 GITHUB_ORG = 'hmcts'.freeze
 CATALOGUE_TOPIC = 'terraform-module'.freeze
 CATALOGUE_DATA_FILE = 'data/terraform_modules.yml'.freeze
+LOCAL_CATALOGUE_SOURCE = 'poc/terraform-modules'.freeze
 REQUIRED_CATALOGUE_FIELDS = %w[name type category description owner lifecycle links].freeze
 ALLOWED_LIFECYCLES = %w[supported deprecated experimental].freeze
 
@@ -29,15 +30,51 @@ def github_get(uri_string)
 end
 
 def discover_module_repos
-  response = github_get("https://api.github.com/search/repositories?q=org:#{GITHUB_ORG}+topic:#{CATALOGUE_TOPIC}&per_page=100")
-  unless response.is_a?(Net::HTTPSuccess)
-    puts "warning: could not list repos with topic '#{CATALOGUE_TOPIC}' (#{response.code}); skipping refresh"
-    return []
+  url = "https://api.github.com/search/repositories?q=org:#{GITHUB_ORG}+topic:#{CATALOGUE_TOPIC}&per_page=100"
+  repos = []
+
+  loop do
+    response = github_get(url)
+    unless response.is_a?(Net::HTTPSuccess)
+      abort "could not list repos with topic '#{CATALOGUE_TOPIC}' (#{response.code}); catalogue data was not changed"
+    end
+
+    payload = JSON.parse(response.body)
+    # GitHub's repository search API will return at most 1,000 results. Do not
+    # publish a knowingly incomplete catalogue if the topic grows beyond that.
+    if payload['total_count'].to_i > 1000
+      abort "#{payload['total_count']} repos have topic '#{CATALOGUE_TOPIC}', above GitHub search's 1,000 result limit"
+    end
+
+    repos.concat(payload['items'] || [])
+    next_link = response['link'].to_s.split(',').find { |link| link.include?('rel="next"') }
+    break unless next_link
+
+    url = next_link[/<([^>]+)>/, 1]
   end
-  JSON.parse(response.body)['items'] || []
+
+  repos
 end
 
-def fetch_catalogue_yaml(repo_name, default_branch)
+def discover_local_module_repos
+  abort "local catalogue source '#{LOCAL_CATALOGUE_SOURCE}' does not exist" unless Dir.exist?(LOCAL_CATALOGUE_SOURCE)
+
+  Dir.children(LOCAL_CATALOGUE_SOURCE).sort.filter_map do |name|
+    path = File.join(LOCAL_CATALOGUE_SOURCE, name)
+    next unless Dir.exist?(path)
+
+    { 'name' => name, 'default_branch' => 'main', 'local_path' => path }
+  end
+end
+
+def fetch_catalogue_yaml(repo_name, default_branch, local_path: nil)
+  if local_path
+    path = File.join(local_path, '.hmcts', 'catalogue.yaml')
+    return nil unless File.exist?(path)
+
+    return YAML.safe_load_file(path, permitted_classes: [Date])
+  end
+
   url = "https://raw.githubusercontent.com/#{GITHUB_ORG}/#{repo_name}/#{default_branch}/.hmcts/catalogue.yaml"
   response = github_get(url)
   return nil unless response.is_a?(Net::HTTPSuccess)
@@ -46,6 +83,26 @@ def fetch_catalogue_yaml(repo_name, default_branch)
 rescue StandardError => e
   puts "warning: #{repo_name} - .hmcts/catalogue.yaml did not parse (#{e.class}: #{e.message})"
   nil
+end
+
+def refresh_catalogue(repos, source:)
+  puts "found #{repos.length} #{source} repo(s)"
+
+  discovered = repos.filter_map do |repo|
+    entry = fetch_catalogue_yaml(repo['name'], repo['default_branch'], local_path: repo['local_path'])
+    unless entry
+      puts "warning: #{repo['name']} - no .hmcts/catalogue.yaml on #{repo['default_branch']}, skipping"
+      next nil
+    end
+    next nil unless validate_catalogue_entry(repo['name'], entry)
+
+    entry.merge('repo' => repo['name'], 'default_branch' => repo['default_branch'])
+  end
+
+  final = discovered.sort_by { |e| e['name'].to_s }
+  File.write(CATALOGUE_DATA_FILE, final.to_yaml)
+
+  puts "published #{discovered.length} discovered entrie(s), wrote #{final.length} total to #{CATALOGUE_DATA_FILE}"
 end
 
 def validate_catalogue_entry(repo_name, entry)
@@ -68,27 +125,10 @@ end
 
 desc 'Refresh the Platform Catalogue Terraform modules data from GitHub'
 task :'catalogue:refresh' do
-  repos = discover_module_repos
-  puts "found #{repos.length} repo(s) tagged '#{CATALOGUE_TOPIC}'"
+  refresh_catalogue(discover_module_repos, source: "repo(s) tagged '#{CATALOGUE_TOPIC}'")
+end
 
-  discovered = repos.filter_map do |repo|
-    entry = fetch_catalogue_yaml(repo['name'], repo['default_branch'])
-    unless entry
-      puts "warning: #{repo['name']} - no .hmcts/catalogue.yaml on #{repo['default_branch']}, skipping"
-      next nil
-    end
-    next nil unless validate_catalogue_entry(repo['name'], entry)
-
-    entry.merge('repo' => repo['name'])
-  end
-
-  existing = File.exist?(CATALOGUE_DATA_FILE) ? (YAML.load_file(CATALOGUE_DATA_FILE) || []) : []
-  discovered_repo_names = discovered.map { |e| e['repo'] }
-  kept_bootstrap = existing.select { |e| e['bootstrap_sample'] && !discovered_repo_names.include?(e['repo']) }
-
-  final = (discovered + kept_bootstrap).sort_by { |e| e['name'].to_s }
-  File.write(CATALOGUE_DATA_FILE, final.to_yaml)
-
-  puts "published #{discovered.length} discovered entrie(s), kept #{kept_bootstrap.length} bootstrap sample(s), " \
-       "wrote #{final.length} total to #{CATALOGUE_DATA_FILE}"
+desc 'Refresh the Platform Catalogue from local POC Terraform module fixtures'
+task :'catalogue:refresh_local' do
+  refresh_catalogue(discover_local_module_repos, source: 'local POC')
 end
