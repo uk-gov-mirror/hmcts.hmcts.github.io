@@ -102,6 +102,8 @@ If Pull Requests are blocked due to Requiring codeowners review see CODEOWNERS s
 
 Teams should pay close attention to dependabot where alerts are received for cases where dependencies have not yet been updated.
 
+Set a `minimumReleaseAge` of at least 14 days in Renovate configuration so newly published package versions aren't adopted immediately. Supply chain worm attacks (such as npm packages compromised and used to auto-publish further malicious versions) tend to be caught and removed within days of publication, so a minimum age gives that window to pass before a new version reaches your dependencies.
+
 ### Archiving code
 Repositories should be archived where they are not actively maintained
 
