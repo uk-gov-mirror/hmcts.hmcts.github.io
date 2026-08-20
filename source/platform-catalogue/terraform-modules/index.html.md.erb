@@ -1,0 +1,131 @@
+---
+title: Terraform modules
+last_reviewed_on: 2026-08-19
+review_in: 6 months
+weight: 1
+---
+
+# <%= current_page.data.title %>
+
+This list is generated from each module repo's `.hmcts/catalogue.yaml` file. To add or fix an entry, edit that
+file in the owning repo rather than here - see the
+[catalogue schema](https://github.com/hmcts/hmcts.github.io/blob/main/schemas/terraform-module-catalogue.schema.json)
+for the fields it accepts.
+
+"Maintained by" is the team accountable for the module, not an exclusive owner - anyone can propose a change to
+a module the same way they'd contribute anywhere else at HMCTS: open a pull request against the repo, following
+the [pull request standards](/cloud-native-platform/standards/pull-requests.html).
+
+<%
+modules = data.terraform_modules || []
+categories = modules.map { |m| m['category'] }.compact.uniq.sort
+lifecycles = %w[supported experimental deprecated] & modules.map { |m| m['lifecycle'] }.compact.uniq
+lifecycle_tag_class = {
+  'supported' => 'govuk-tag--green',
+  'experimental' => '',
+  'deprecated' => 'govuk-tag--grey'
+}
+%>
+
+<% if categories.any? %>
+<div class="catalogue-filters" role="group" aria-label="Filter Terraform modules">
+  <div class="catalogue-filters__group">
+    <span class="catalogue-filters__label">Category:</span>
+    <div class="govuk-button-group">
+      <button type="button" class="govuk-button catalogue-filter" data-filter-group="category" data-filter-value="all" aria-pressed="true">All</button>
+      <% categories.each do |category| %>
+      <button type="button" class="govuk-button govuk-button--secondary catalogue-filter" data-filter-group="category" data-filter-value="<%= category %>" aria-pressed="false"><%= category.capitalize %></button>
+      <% end %>
+    </div>
+  </div>
+  <div class="catalogue-filters__group">
+    <span class="catalogue-filters__label">Lifecycle:</span>
+    <div class="govuk-button-group">
+      <button type="button" class="govuk-button catalogue-filter" data-filter-group="lifecycle" data-filter-value="all" aria-pressed="true">All</button>
+      <% lifecycles.each do |lifecycle| %>
+      <button type="button" class="govuk-button govuk-button--secondary catalogue-filter" data-filter-group="lifecycle" data-filter-value="<%= lifecycle %>" aria-pressed="false"><%= lifecycle.capitalize %></button>
+      <% end %>
+    </div>
+  </div>
+  <p class="catalogue-filters__count" id="catalogue-count"></p>
+</div>
+<% end %>
+
+<div id="catalogue-modules">
+<% modules.each do |mod| %>
+<% links = mod['links'] || {} %>
+<div class="catalogue-module" data-category="<%= mod['category'] %>" data-lifecycle="<%= mod['lifecycle'] %>">
+  <h2><%= mod['name'] %></h2>
+  <p>
+    <strong class="govuk-tag <%= lifecycle_tag_class[mod['lifecycle']] %>"><%= mod['lifecycle'] %></strong>
+    <% if mod['bootstrap_sample'] %><span class="catalogue-module__sample-note">bootstrap sample - not yet sourced from a repo</span><% end %>
+  </p>
+  <p><%= mod['description'] %></p>
+  <div class="table-container">
+    <table>
+      <tr><td>Maintained by</td><td><%= mod['owner'] %></td></tr>
+      <tr><td>Category</td><td><%= mod['category'] %></td></tr>
+      <% if mod.dig('version', 'recommended') %>
+      <tr><td>Recommended version</td><td><%= mod['version']['recommended'] %></td></tr>
+      <% end %>
+      <% if mod.dig('terraform', 'minimum_version') %>
+      <tr><td>Terraform</td><td>&gt;= <%= mod['terraform']['minimum_version'] %></td></tr>
+      <% end %>
+      <% (mod['providers'] || {}).each do |provider, constraint| %>
+      <% next unless constraint %>
+      <tr><td><%= provider %> provider</td><td><%= constraint %></td></tr>
+      <% end %>
+      <% if mod['lifecycle'] == 'deprecated' && mod['replacement'] %>
+      <tr><td>Replacement</td><td><%= mod['replacement'] %></td></tr>
+      <% end %>
+    </table>
+  </div>
+  <p>
+    <% parts = [] %>
+    <% parts << "<a href=\"#{links['documentation']}\">Documentation</a>" if links['documentation'] %>
+    <% parts << "<a href=\"#{links['examples']}\">Examples</a>" if links['examples'] %>
+    <% parts << "<a href=\"#{links['repository']}\">GitHub</a>" if links['repository'] %>
+    <% parts << "<a href=\"#{links['repository']}/edit/main/.hmcts/catalogue.yaml\">Contribute</a>" if links['repository'] %>
+    <%= parts.join(' | ') %>
+  </p>
+</div>
+<% end %>
+<p id="catalogue-empty-state" hidden>No modules match the selected filters.</p>
+</div>
+
+<script>
+(function () {
+  var filterButtons = document.querySelectorAll('.catalogue-filter');
+  var moduleCards = document.querySelectorAll('.catalogue-module');
+  var emptyState = document.getElementById('catalogue-empty-state');
+  var countLabel = document.getElementById('catalogue-count');
+  var active = { category: 'all', lifecycle: 'all' };
+
+  function apply() {
+    var visible = 0;
+    moduleCards.forEach(function (card) {
+      var matches = (active.category === 'all' || card.dataset.category === active.category) &&
+        (active.lifecycle === 'all' || card.dataset.lifecycle === active.lifecycle);
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    });
+    emptyState.hidden = visible !== 0;
+    countLabel.textContent = 'Showing ' + visible + ' of ' + moduleCards.length + ' modules';
+  }
+
+  filterButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      var group = button.dataset.filterGroup;
+      active[group] = button.dataset.filterValue;
+      document.querySelectorAll('.catalogue-filter[data-filter-group="' + group + '"]').forEach(function (groupButton) {
+        var isActive = groupButton === button;
+        groupButton.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        groupButton.classList.toggle('govuk-button--secondary', !isActive);
+      });
+      apply();
+    });
+  });
+
+  apply();
+})();
+</script>

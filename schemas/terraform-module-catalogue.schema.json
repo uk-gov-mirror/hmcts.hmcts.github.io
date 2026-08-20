@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hmcts.github.io/schemas/terraform-module-catalogue.schema.json",
+  "title": "HMCTS Terraform module catalogue metadata",
+  "description": "Contract for the .hmcts/catalogue.yaml file a Terraform module repo publishes so it can be picked up by the HMCTS Way Platform Catalogue. Repos are discovered via the 'terraform-module' GitHub topic.",
+  "type": "object",
+  "required": ["name", "type", "category", "description", "owner", "lifecycle", "links"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Human-readable module name, e.g. 'PostgreSQL Flexible Server'."
+    },
+    "type": {
+      "type": "string",
+      "const": "terraform-module"
+    },
+    "category": {
+      "type": "string",
+      "description": "Grouping used to sort the catalogue, e.g. 'database', 'networking', 'compute'."
+    },
+    "description": {
+      "type": "string",
+      "description": "One or two sentences on what the module provisions."
+    },
+    "owner": {
+      "type": "string",
+      "description": "Team accountable for maintaining the module and reviewing changes, e.g. 'data-domain'. Not exclusive ownership - any team can propose a change via a normal pull request, per the HMCTS Way pull request standards."
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["supported", "deprecated", "experimental"]
+    },
+    "maturity": {
+      "type": "string",
+      "enum": ["production", "beta", "alpha"]
+    },
+    "platform": {
+      "type": "object",
+      "properties": {
+        "approved": { "type": "boolean" }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "new_deployments": {
+          "type": "string",
+          "enum": ["allowed", "restricted", "blocked"]
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "properties": {
+        "recommended": { "type": "string" }
+      }
+    },
+    "terraform": {
+      "type": "object",
+      "properties": {
+        "minimum_version": { "type": "string" }
+      }
+    },
+    "providers": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Provider name to required version constraint, e.g. { azurerm: '>= 4.0' }."
+    },
+    "links": {
+      "type": "object",
+      "required": ["repository"],
+      "properties": {
+        "documentation": { "type": "string", "format": "uri" },
+        "examples": { "type": "string", "format": "uri" },
+        "repository": { "type": "string", "format": "uri" }
+      }
+    },
+    "replacement": {
+      "type": ["string", "null"],
+      "description": "Name or repo of the module to migrate to. Required when lifecycle is 'deprecated'."
+    }
+  },
+  "if": {
+    "properties": { "lifecycle": { "const": "deprecated" } }
+  },
+  "then": {
+    "required": ["replacement"]
+  }
+}
