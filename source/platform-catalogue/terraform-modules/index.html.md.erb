@@ -17,14 +17,24 @@ ownership: platform modules such as Front Door are shared HMCTS assets, and anyo
 through a normal pull request, following the
 [pull request standards](/cloud-native-platform/standards/pull-requests.html).
 
+The catalogue shows how each capability is used:
+
+- **Self-service** — your team can include and deploy the module from its own Terraform configuration.
+- **Shared platform component** — your team proposes a configuration change through a pull request; the shared platform pipeline deploys it after review.
+
 <%
 modules = data.terraform_modules || []
 categories = modules.map { |m| m['category'] }.compact.uniq.sort
 lifecycles = %w[supported experimental deprecated] & modules.map { |m| m['lifecycle'] }.compact.uniq
+consumption_models = %w[self-service contribution-required] & modules.map { |m| m.dig('consumption', 'model') }.compact.uniq
 lifecycle_tag_class = {
   'supported' => 'govuk-tag--green',
   'experimental' => '',
   'deprecated' => 'govuk-tag--grey'
+}
+consumption_labels = {
+  'self-service' => 'Self-service',
+  'contribution-required' => 'Shared platform component'
 }
 %>
 
@@ -36,6 +46,15 @@ lifecycle_tag_class = {
       <button type="button" class="govuk-button catalogue-filter" data-filter-group="category" data-filter-value="all" aria-pressed="true">All</button>
       <% categories.each do |category| %>
       <button type="button" class="govuk-button govuk-button--secondary catalogue-filter" data-filter-group="category" data-filter-value="<%= category %>" aria-pressed="false"><%= category.capitalize %></button>
+      <% end %>
+    </div>
+  </div>
+  <div class="catalogue-filters__group">
+    <span class="catalogue-filters__label">How to use it:</span>
+    <div class="govuk-button-group">
+      <button type="button" class="govuk-button catalogue-filter" data-filter-group="consumption" data-filter-value="all" aria-pressed="true">All</button>
+      <% consumption_models.each do |model| %>
+      <button type="button" class="govuk-button govuk-button--secondary catalogue-filter" data-filter-group="consumption" data-filter-value="<%= model %>" aria-pressed="false"><%= consumption_labels[model] %></button>
       <% end %>
     </div>
   </div>
@@ -55,11 +74,13 @@ lifecycle_tag_class = {
 <div id="catalogue-modules">
 <% modules.each do |mod| %>
 <% links = mod['links'] || {} %>
-<% default_branch = mod['default_branch'] || 'main' %>
-<div class="catalogue-module" data-category="<%= mod['category'] %>" data-lifecycle="<%= mod['lifecycle'] %>">
+<% repository = mod['repository'] || {} %>
+<% default_branch = repository['default_branch'] || mod['default_branch'] || 'main' %>
+<div class="catalogue-module" data-category="<%= mod['category'] %>" data-lifecycle="<%= mod['lifecycle'] %>" data-consumption="<%= mod.dig('consumption', 'model') %>">
   <h2><%= mod['name'] %></h2>
   <p>
     <strong class="govuk-tag <%= lifecycle_tag_class[mod['lifecycle']] %>"><%= mod['lifecycle'] %></strong>
+    <% if mod.dig('consumption', 'model') %><strong class="govuk-tag govuk-tag--blue"><%= consumption_labels[mod['consumption']['model']] %></strong><% end %>
     <% if mod['bootstrap_sample'] %><span class="catalogue-module__sample-note">bootstrap sample - not yet sourced from a repo</span><% end %>
   </p>
   <p><%= mod['description'] %></p>
@@ -72,6 +93,9 @@ lifecycle_tag_class = {
       <% end %>
       <% unless mod.dig('platform', 'approved').nil? %>
       <tr><td>Platform approval</td><td><%= mod['platform']['approved'] ? 'Approved' : 'Not approved' %></td></tr>
+      <% end %>
+      <% if mod.dig('consumption', 'model') %>
+      <tr><td>How to use it</td><td><%= consumption_labels[mod['consumption']['model']] %> — deployed by <%= mod['consumption']['deployed_by'] %></td></tr>
       <% end %>
       <% if mod.dig('usage', 'new_deployments') %>
       <tr><td>New deployments</td><td><%= mod['usage']['new_deployments'].capitalize %></td></tr>
@@ -104,8 +128,11 @@ lifecycle_tag_class = {
     <% parts = [] %>
     <% parts << "<a href=\"#{links['documentation']}\">Documentation</a>" if links['documentation'] %>
     <% parts << "<a href=\"#{links['examples']}\">Examples</a>" if links['examples'] %>
-    <% parts << "<a href=\"#{links['repository']}\">GitHub</a>" if links['repository'] %>
-    <% parts << "<a href=\"#{links['repository']}/edit/#{default_branch}/.hmcts/catalogue.yaml\">Contribute</a>" if links['repository'] %>
+    <% parts << "<a href=\"#{mod['consumption']['contribution_repository']}\">Contribute configuration</a>" if mod.dig('consumption', 'contribution_repository') %>
+    <% parts << "<a href=\"#{mod['consumption']['contribution_guidance']}\">Contribution guidance</a>" if mod.dig('consumption', 'contribution_guidance') %>
+    <% parts << "<a href=\"#{mod['consumption']['request_guidance']}\">Request guidance</a>" if mod.dig('consumption', 'request_guidance') %>
+    <% parts << "<a href=\"#{repository['url']}\">GitHub</a>" if repository['url'] %>
+    <% parts << "<a href=\"#{repository['url']}/edit/#{default_branch}/.hmcts/catalogue.yaml\">Contribute</a>" if repository['url'] %>
     <%= parts.join(' | ') %>
   </p>
 </div>
@@ -119,13 +146,14 @@ lifecycle_tag_class = {
   var moduleCards = document.querySelectorAll('.catalogue-module');
   var emptyState = document.getElementById('catalogue-empty-state');
   var countLabel = document.getElementById('catalogue-count');
-  var active = { category: 'all', lifecycle: 'all' };
+  var active = { category: 'all', lifecycle: 'all', consumption: 'all' };
 
   function apply() {
     var visible = 0;
     moduleCards.forEach(function (card) {
       var matches = (active.category === 'all' || card.dataset.category === active.category) &&
-        (active.lifecycle === 'all' || card.dataset.lifecycle === active.lifecycle);
+        (active.lifecycle === 'all' || card.dataset.lifecycle === active.lifecycle) &&
+        (active.consumption === 'all' || card.dataset.consumption === active.consumption);
       card.hidden = !matches;
       if (matches) visible += 1;
     });

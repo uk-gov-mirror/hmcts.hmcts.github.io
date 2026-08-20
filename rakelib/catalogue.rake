@@ -16,7 +16,7 @@ GITHUB_ORG = 'hmcts'.freeze
 CATALOGUE_TOPIC = 'terraform-module'.freeze
 CATALOGUE_DATA_FILE = 'data/terraform_modules.yml'.freeze
 LOCAL_CATALOGUE_SOURCE = 'poc/terraform-modules'.freeze
-REQUIRED_CATALOGUE_FIELDS = %w[name type category description owner lifecycle links].freeze
+REQUIRED_CATALOGUE_FIELDS = %w[apiVersion id name type category description owner lifecycle consumption version terraform providers repository links].freeze
 ALLOWED_LIFECYCLES = %w[supported deprecated experimental].freeze
 
 def github_get(uri_string)
@@ -114,8 +114,20 @@ def validate_catalogue_entry(repo_name, entry)
   if entry['lifecycle'] == 'deprecated' && entry['replacement'].to_s.empty?
     problems << 'lifecycle is deprecated but replacement is missing'
   end
-  if entry['links'].is_a?(Hash) && entry['links']['repository'].to_s.empty?
-    problems << 'links.repository is missing'
+  unless %w[self-service contribution-required].include?(entry.dig('consumption', 'model'))
+    problems << 'consumption.model must be self-service or contribution-required'
+  end
+  problems << 'version.recommended is missing' if entry.dig('version', 'recommended').to_s.empty?
+  problems << 'terraform.minimum_version is missing' if entry.dig('terraform', 'minimum_version').to_s.empty?
+  if entry['repository'].is_a?(Hash)
+    %w[url default_branch archived topics].each do |field|
+      problems << "repository.#{field} is missing" if entry['repository'][field].nil? || entry['repository'][field] == ''
+    end
+  else
+    problems << 'repository must be an object'
+  end
+  %w[documentation examples].each do |field|
+    problems << "links.#{field} is missing" if entry.dig('links', field).to_s.empty?
   end
   return true if problems.empty?
 

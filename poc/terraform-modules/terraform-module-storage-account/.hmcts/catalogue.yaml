@@ -7,6 +7,9 @@ description: Provides a baseline configuration for an HMCTS Azure Storage Accoun
 owner: cloud-platform
 lifecycle: supported
 maturity: production
+consumption:
+  model: self-service
+  deployed_by: consuming team
 platform:
   approved: true
 usage:
@@ -18,9 +21,13 @@ terraform:
   minimum_version: 1.6.0
 providers:
   azurerm: '>= 4.0, < 5.0'
+repository:
+  url: https://github.com/hmcts/terraform-module-storage-account
+  default_branch: main
+  archived: false
+  topics: [terraform-module]
 supported_environments: [sandbox, development, test, production]
 links:
-  repository: https://github.com/hmcts/terraform-module-storage-account
   documentation: https://github.com/hmcts/terraform-module-storage-account#readme
   examples: https://github.com/hmcts/terraform-module-storage-account/tree/main/examples/basic
 support:

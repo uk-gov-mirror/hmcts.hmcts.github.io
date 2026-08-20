@@ -7,6 +7,10 @@ description: Creates an Azure Front Door profile, endpoint, origins, routes, cus
 owner: HMCTS platform contributors
 lifecycle: supported
 maturity: production
+consumption:
+  model: contribution-required
+  deployed_by: shared platform pipeline
+  contribution_repository: https://github.com/hmcts/terraform-module-frontdoor
 platform:
   approved: true
 usage:
@@ -18,9 +22,13 @@ terraform:
   minimum_version: 1.6.0
 providers:
   azurerm: '>= 4.0, < 5.0'
+repository:
+  url: https://github.com/hmcts/terraform-module-frontdoor
+  default_branch: master
+  archived: false
+  topics: [terraform-module]
 supported_environments: [development, test, production]
 links:
-  repository: https://github.com/hmcts/terraform-module-front-door
   documentation: https://github.com/hmcts/terraform-module-frontdoor#readme
   examples: https://github.com/hmcts/terraform-module-frontdoor/tree/master/example
 support:

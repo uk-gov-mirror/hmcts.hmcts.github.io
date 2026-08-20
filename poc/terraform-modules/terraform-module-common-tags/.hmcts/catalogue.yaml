@@ -7,6 +7,9 @@ description: Produces the standard tags applied to HMCTS Azure resources.
 owner: platform-operations
 lifecycle: supported
 maturity: production
+consumption:
+  model: self-service
+  deployed_by: consuming team
 platform:
   approved: true
 usage:
@@ -17,9 +20,13 @@ version:
 terraform:
   minimum_version: 1.6.0
 providers: {}
+repository:
+  url: https://github.com/hmcts/terraform-module-common-tags
+  default_branch: main
+  archived: false
+  topics: [terraform-module]
 supported_environments: [sandbox, development, test, production]
 links:
-  repository: https://github.com/hmcts/terraform-module-common-tags
   documentation: https://github.com/hmcts/terraform-module-common-tags#readme
   examples: https://github.com/hmcts/terraform-module-common-tags/tree/main/examples/basic
 support:

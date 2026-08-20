@@ -4,8 +4,16 @@
   "title": "HMCTS Terraform module catalogue metadata",
   "description": "Contract for the .hmcts/catalogue.yaml file a Terraform module repo publishes so it can be picked up by the HMCTS Way Platform Catalogue. Repos are discovered via the 'terraform-module' GitHub topic.",
   "type": "object",
-  "required": ["name", "type", "category", "description", "owner", "lifecycle", "links"],
+  "required": ["apiVersion", "id", "name", "type", "category", "description", "owner", "lifecycle", "consumption", "version", "terraform", "providers", "repository", "links"],
   "properties": {
+    "apiVersion": {
+      "type": "string",
+      "const": "catalogue.hmcts.gov.uk/v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
     "name": {
       "type": "string",
       "description": "Human-readable module name, e.g. 'PostgreSQL Flexible Server'."
@@ -40,6 +48,20 @@
         "approved": { "type": "boolean" }
       }
     },
+    "consumption": {
+      "type": "object",
+      "required": ["model", "deployed_by"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["self-service", "contribution-required"]
+        },
+        "deployed_by": { "type": "string" },
+        "contribution_repository": { "type": "string", "format": "uri" },
+        "contribution_guidance": { "type": "string", "format": "uri" },
+        "request_guidance": { "type": "string", "format": "uri" }
+      }
+    },
     "usage": {
       "type": "object",
       "properties": {
@@ -66,13 +88,26 @@
       "additionalProperties": { "type": "string" },
       "description": "Provider name to required version constraint, e.g. { azurerm: '>= 4.0' }."
     },
+    "repository": {
+      "type": "object",
+      "required": ["url", "default_branch", "archived", "topics"],
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "default_branch": { "type": "string" },
+        "archived": { "type": "boolean" },
+        "topics": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
     "links": {
       "type": "object",
-      "required": ["repository"],
+      "required": ["documentation", "examples"],
       "properties": {
         "documentation": { "type": "string", "format": "uri" },
-        "examples": { "type": "string", "format": "uri" },
-        "repository": { "type": "string", "format": "uri" }
+        "examples": { "type": "string", "format": "uri" }
       }
     },
     "replacement": {

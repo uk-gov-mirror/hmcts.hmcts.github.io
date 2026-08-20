@@ -8,6 +8,12 @@ five supported modules across common categories, plus one deprecated module with
 approved replacement. Their `owner` metadata identifies stewardship and a support route;
 the modules remain shared assets that anyone can improve through a normal pull request.
 
+Each fixture's catalogue record is complete and self-describing: it includes repository
+URL, default branch, archived state, topics, recommended version, and Terraform/provider
+requirements rather than relying on enrichment from GitHub or Terraform source files.
+The `consumption` block makes the deployment route explicit: self-service or a
+configuration pull request to a shared platform component.
+
 ## Run locally
 
 From the repository root:

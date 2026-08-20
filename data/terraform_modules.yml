@@ -8,6 +8,9 @@
   owner: cloud-platform
   lifecycle: experimental
   maturity: beta
+  consumption:
+    model: self-service
+    deployed_by: consuming team
   platform:
     approved: false
   usage:
@@ -19,12 +22,17 @@
     minimum_version: 1.6.0
   providers:
     azurerm: ">= 4.0, < 5.0"
+  repository:
+    url: https://github.com/hmcts/terraform-module-application-insights
+    default_branch: main
+    archived: false
+    topics:
+    - terraform-module
   supported_environments:
   - sandbox
   - development
   - test
   links:
-    repository: https://github.com/hmcts/terraform-module-application-insights
     documentation: https://github.com/hmcts/terraform-module-application-insights#readme
     examples: https://github.com/hmcts/terraform-module-application-insights/tree/main/examples/basic
   support:
@@ -40,6 +48,9 @@
   owner: platform-operations
   lifecycle: supported
   maturity: production
+  consumption:
+    model: self-service
+    deployed_by: consuming team
   platform:
     approved: true
   usage:
@@ -51,13 +62,18 @@
     minimum_version: 1.6.0
   providers:
     azurerm: ">= 4.0, < 5.0"
+  repository:
+    url: https://github.com/hmcts/terraform-module-azure-managed-redis
+    default_branch: main
+    archived: false
+    topics:
+    - terraform-module
   supported_environments:
   - sandbox
   - development
   - test
   - production
   links:
-    repository: https://github.com/hmcts/terraform-module-azure-managed-redis
     documentation: https://github.com/hmcts/terraform-module-azure-managed-redis#readme
     examples: https://github.com/hmcts/terraform-module-azure-managed-redis/tree/main/examples/basic
   support:
@@ -73,6 +89,9 @@
   owner: platform-operations
   lifecycle: supported
   maturity: production
+  consumption:
+    model: self-service
+    deployed_by: consuming team
   platform:
     approved: true
   usage:
@@ -83,13 +102,18 @@
   terraform:
     minimum_version: 1.6.0
   providers: {}
+  repository:
+    url: https://github.com/hmcts/terraform-module-common-tags
+    default_branch: main
+    archived: false
+    topics:
+    - terraform-module
   supported_environments:
   - sandbox
   - development
   - test
   - production
   links:
-    repository: https://github.com/hmcts/terraform-module-common-tags
     documentation: https://github.com/hmcts/terraform-module-common-tags#readme
     examples: https://github.com/hmcts/terraform-module-common-tags/tree/main/examples/basic
   support:
@@ -106,6 +130,10 @@
   owner: HMCTS platform contributors
   lifecycle: supported
   maturity: production
+  consumption:
+    model: contribution-required
+    deployed_by: shared platform pipeline
+    contribution_repository: https://github.com/hmcts/terraform-module-frontdoor
   platform:
     approved: true
   usage:
@@ -117,12 +145,17 @@
     minimum_version: 1.6.0
   providers:
     azurerm: ">= 4.0, < 5.0"
+  repository:
+    url: https://github.com/hmcts/terraform-module-frontdoor
+    default_branch: master
+    archived: false
+    topics:
+    - terraform-module
   supported_environments:
   - development
   - test
   - production
   links:
-    repository: https://github.com/hmcts/terraform-module-front-door
     documentation: https://github.com/hmcts/terraform-module-frontdoor#readme
     examples: https://github.com/hmcts/terraform-module-frontdoor/tree/master/example
   support:
@@ -139,6 +172,10 @@
   owner: platform-operations
   lifecycle: deprecated
   maturity: production
+  consumption:
+    model: contribution-required
+    deployed_by: shared platform pipeline
+    contribution_repository: https://github.com/hmcts/terraform-module-legacy-private-dns
   platform:
     approved: false
   usage:
@@ -150,13 +187,18 @@
     minimum_version: 1.6.0
   providers:
     azurerm: ">= 4.0, < 5.0"
+  repository:
+    url: https://github.com/hmcts/terraform-module-legacy-private-dns
+    default_branch: main
+    archived: true
+    topics:
+    - terraform-module
   supported_environments:
   - sandbox
   - development
   - test
   - production
   links:
-    repository: https://github.com/hmcts/terraform-module-legacy-private-dns
     documentation: https://github.com/hmcts/terraform-module-legacy-private-dns#readme
     examples: https://github.com/hmcts/terraform-module-legacy-private-dns/tree/main/examples/basic
   support:
@@ -173,6 +215,9 @@
   owner: cloud-platform
   lifecycle: supported
   maturity: production
+  consumption:
+    model: self-service
+    deployed_by: consuming team
   platform:
     approved: true
   usage:
@@ -184,13 +229,18 @@
     minimum_version: 1.6.0
   providers:
     azurerm: ">= 4.0, < 5.0"
+  repository:
+    url: https://github.com/hmcts/terraform-module-storage-account
+    default_branch: main
+    archived: false
+    topics:
+    - terraform-module
   supported_environments:
   - sandbox
   - development
   - test
   - production
   links:
-    repository: https://github.com/hmcts/terraform-module-storage-account
     documentation: https://github.com/hmcts/terraform-module-storage-account#readme
     examples: https://github.com/hmcts/terraform-module-storage-account/tree/main/examples/basic
   support:

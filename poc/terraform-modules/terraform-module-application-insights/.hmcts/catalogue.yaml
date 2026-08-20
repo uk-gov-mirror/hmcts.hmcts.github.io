@@ -7,6 +7,9 @@ description: Sets the standard configuration for an Application Insights instanc
 owner: cloud-platform
 lifecycle: experimental
 maturity: beta
+consumption:
+  model: self-service
+  deployed_by: consuming team
 platform:
   approved: false
 usage:
@@ -18,9 +21,13 @@ terraform:
   minimum_version: 1.6.0
 providers:
   azurerm: '>= 4.0, < 5.0'
+repository:
+  url: https://github.com/hmcts/terraform-module-application-insights
+  default_branch: main
+  archived: false
+  topics: [terraform-module]
 supported_environments: [sandbox, development, test]
 links:
-  repository: https://github.com/hmcts/terraform-module-application-insights
   documentation: https://github.com/hmcts/terraform-module-application-insights#readme
   examples: https://github.com/hmcts/terraform-module-application-insights/tree/main/examples/basic
 support:
