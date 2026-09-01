@@ -349,6 +349,10 @@ finops
 Codespaces
 Customisation
 devcontainers
+DSIT
+bsp
+cdm
+neuvector
 Qube
 Danalyzer
 Ddata
